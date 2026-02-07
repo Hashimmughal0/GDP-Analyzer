@@ -1,9 +1,11 @@
 from utilities.config_loader import load_config
 from utilities.data_loader import load_gdp_data
 from utilities.data_cleaner import clean_data
+import os
 
-CONFIG_PATH = "config/config.json"
-DATA_PATH = "data/GDP_Data.csv"
+BASE_DIR = os.path.dirname(__file__)
+CONFIG_PATH = os.path.join(BASE_DIR, "config", "config.json")
+DATA_PATH = os.path.join(BASE_DIR, "data", "GDP_Data.csv")
 
 def main():
     try:
