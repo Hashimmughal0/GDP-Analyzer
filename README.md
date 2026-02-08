@@ -1,5 +1,8 @@
 # GDP Analytics Dashboard
 
+**SDA Project**  
+Created by: **24L-0775** and **24L-0744**
+
 ## What's This Project About?
 
 So basically, we built a data analysis tool that takes World Bank GDP data and lets you filter it by region/year, compute stats like average or sum, and then visualize it with graphs. It's config-driven, meaning you don't hardcode anything — all the filtering and operations are controlled through a JSON config file.
