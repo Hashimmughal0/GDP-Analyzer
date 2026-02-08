@@ -1,15 +1,29 @@
 def clean_data(raw_data: list) -> list:
-    def is_valid(row):
-        return (
-            row["Value"] not in ("", None) and
-            row["Year"].isdigit()
-        )
+    cleaned = []
 
-    cleaned = filter(is_valid, raw_data)
+    for row in raw_data:
+        country = row.get("Country Name") or row.get("Country") or ""
+        region = row.get("Region") or row.get("Continent") or ""
 
-    return list(map(lambda row: {
-        "Country": row["Country Name"],
-        "Region": row["Region"],
-        "Year": int(row["Year"]),
-        "Value": float(row["Value"])
-    }, cleaned))
+        
+        for key, val in row.items():
+            if not key:
+                continue
+            key_str = key.strip()
+            if key_str.isdigit():
+                if val in ("", None):
+                    continue
+                try:
+                    year = int(key_str)
+                    value = float(val)
+                except Exception:
+                    continue
+
+                cleaned.append({
+                    "Country": country,
+                    "Region": region,
+                    "Year": year,
+                    "Value": value
+                })
+
+    return cleaned
