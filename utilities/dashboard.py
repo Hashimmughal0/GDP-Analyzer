@@ -1,5 +1,5 @@
 from utilities.data_processor import filter_data, compute_statistic
-from utilities.visualizer import plot_region_gdp, plot_year_distribution
+from utilities.visualizer import plot_region_gdp, plot_year_distribution, _choose_scale
 import pandas as pd
 
 def run_dashboard(df, config):
@@ -15,7 +15,11 @@ def run_dashboard(df, config):
     print(f"Region    : {region}")
     print(f"Year      : {year}")
     print(f"Operation : {operation.upper()}")
-    print(f"Result    : {result:,.2f}")
+   
+    factor, unit = _choose_scale([result])
+    scaled_result = result / factor
+    unit_label = f" {unit} USD" if unit else " USD"
+    print(f"Result    : {scaled_result:,.2f}{unit_label}")
 
     
     df_plot = pd.DataFrame(filtered_list)
