@@ -24,7 +24,7 @@ def _choose_scale(values):
     return 1, ""
 
 
-def plot_region_gdp(df: pd.DataFrame, region: str, year: int):
+def plot_region_gdp(df: pd.DataFrame, region: str, year: int, top_n: int = 12):
     df = df.copy()
     df["Value"] = df["Value"].astype(float)
 
@@ -32,10 +32,18 @@ def plot_region_gdp(df: pd.DataFrame, region: str, year: int):
     df["Value_Scaled"] = df["Value"] / factor
     unit_label = f" ({unit} USD)" if unit else ""
 
-    # Bar Chart
-    plt.figure()
-    ax = sns.barplot(data=df, x="Country Name", y="Value_Scaled")
-    plt.xticks(rotation=90)
+    
+    if top_n is None or top_n <= 0:
+        top_n = len(df)
+
+    df_sorted = df.sort_values("Value", ascending=False).reset_index(drop=True)
+    top_df = df_sorted.head(top_n)
+    others_sum = df_sorted["Value"].sum() - top_df["Value"].sum()
+
+   
+    plt.figure(figsize=(12, 6))
+    ax = sns.barplot(data=top_df, x="Country Name", y="Value_Scaled", palette="tab20")
+    plt.xticks(rotation=45, ha="right")
     plt.title(f"GDP by Country in {region} ({year})")
     plt.xlabel("Country")
     plt.ylabel(f"GDP{unit_label}")
@@ -43,14 +51,23 @@ def plot_region_gdp(df: pd.DataFrame, region: str, year: int):
     plt.tight_layout()
     plt.show()
 
-    # Pie Chart 
-    plt.figure()
-    values = df["Value_Scaled"].tolist()
-    labels = df["Country Name"].tolist()
-    patches, texts, autotexts = plt.pie(values, labels=None, autopct="%1.1f%%")
+    
+    pie_top = min(8, len(df_sorted))
+    pie_df = df_sorted.head(pie_top).copy()
+    pie_values = pie_df["Value"].tolist()
+    pie_labels = pie_df["Country Name"].tolist()
+
+    if others_sum > 0:
+        pie_values.append(others_sum)
+        pie_labels.append("Other")
+
+    
+    pie_values_scaled = [v / factor for v in pie_values]
+
+    plt.figure(figsize=(8, 8))
+    patches, texts, autotexts = plt.pie(pie_values_scaled, labels=None, autopct="%1.1f%%", startangle=140)
     plt.title(f"GDP Distribution in {region} ({year})")
-    # Build legend with formatted values
-    legend_labels = [f"{n} ({v:,.1f} {unit})" if unit else f"{n} ({v:,.0f})" for n, v in zip(labels, df["Value_Scaled"].tolist())]
+    legend_labels = [f"{n} ({v:,.1f} {unit})" if unit else f"{n} ({v:,.0f})" for n, v in zip(pie_labels, pie_values_scaled)]
     plt.legend(patches, legend_labels, loc="best", fontsize="small")
     plt.tight_layout()
     plt.show()
@@ -63,7 +80,7 @@ def plot_year_distribution(df: pd.DataFrame, year: int):
     df["Value_Scaled"] = df["Value"] / factor
     unit_label = f" ({unit} USD)" if unit else ""
 
-    # Histogram
+    
     plt.figure()
     sns.histplot(df["Value_Scaled"], bins=10, kde=True)
     plt.title(f"GDP Distribution Histogram ({year})")
@@ -73,7 +90,7 @@ def plot_year_distribution(df: pd.DataFrame, year: int):
     plt.tight_layout()
     plt.show()
 
-    # Scatter Plot
+   
     plt.figure()
     sns.scatterplot(x=range(len(df)), y=df["Value_Scaled"])
     plt.title(f"GDP Scatter Plot ({year})")

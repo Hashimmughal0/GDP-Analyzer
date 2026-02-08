@@ -1,9 +1,0 @@
-{
-    "data_file": "Data/gdp_with_continent_filled.xlsx - GDP.csv",
-    "region": "Asia",
-    "country": "India",
-    "year": 2020,
-    "operation": "average",
-    "top_n": 8,
-    "output": "dashboard"
-}

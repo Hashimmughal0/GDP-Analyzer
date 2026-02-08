@@ -26,5 +26,6 @@ def run_dashboard(df, config):
     if "Country" in df_plot.columns and "Country Name" not in df_plot.columns:
         df_plot = df_plot.rename(columns={"Country": "Country Name"})
 
-    plot_region_gdp(df_plot, region, year)
+    top_n = config.get("top_n") if isinstance(config, dict) else None
+    plot_region_gdp(df_plot, region, year, top_n=top_n)
     plot_year_distribution(df_plot, year)
