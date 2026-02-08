@@ -1,5 +1,5 @@
-from src.data_processor import filter_data, compute_statistic
-from src.visualizer import plot_region_gdp, plot_year_distribution
+from utilities.data_processor import filter_data, compute_statistic
+from utilities.visualizer import plot_region_gdp, plot_year_distribution
 
 def run_dashboard(df, config):
     region = config["region"]
