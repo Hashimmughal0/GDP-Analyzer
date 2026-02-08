@@ -1,6 +1,7 @@
 from utilities.config_loader import load_config
 from utilities.data_loader import load_gdp_data
 from utilities.data_cleaner import clean_data
+from utilities.dashboard import run_dashboard
 import os
 
 BASE_DIR = os.path.dirname(__file__)
@@ -12,6 +13,7 @@ def main():
         config = load_config(CONFIG_PATH)
         raw_data = load_gdp_data(DATA_PATH)
         clean_dataset = clean_data(raw_data)
+        run_dashboard(clean_dataset, config)
 
     except Exception as e:
         print("ERROR:", str(e))
