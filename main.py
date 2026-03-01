@@ -27,7 +27,7 @@ def load_config(path: str) -> dict:
 
 
 def bootstrap() -> None:
-    config_path = os.path.join(BASE_DIR, "config.json")
+    config_path = os.path.join(BASE_DIR, "config/config.json")
 
     try:
         config = load_config(config_path)
