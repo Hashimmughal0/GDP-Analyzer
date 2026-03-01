@@ -115,8 +115,12 @@ class UiWriter:
         tab = ttk.Frame(nb)
         nb.add(tab, text="  Configuration  ")
         t = self._scrollable_text(tab, "#56cfad")
+        # NOTE: config.json lives inside the `config` directory at project root.
         config_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.json")
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "config",
+            "config.json",
+        )
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 t.insert(tk.END, json.dumps(json.load(f), indent=4))
