@@ -23,7 +23,34 @@ def load_config(path: str) -> dict:
     if not os.path.exists(path):
         raise FileNotFoundError(f"Config file not found: {path}")
     with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+        config = json.load(f)
+    validate_config(config)
+    return config
+
+
+def validate_config(config: dict) -> None:
+    """Ensure the config has all required keys and sensible types.
+
+    Raises a ``ValueError`` or ``KeyError`` if something is missing or malformed.
+    """
+    required = [
+        "input", "output", "input_file",
+        "region", "year", "start_year", "end_year",
+        "operation",
+    ]
+    missing = [k for k in required if k not in config]
+    if missing:
+        raise KeyError(f"Missing configuration field(s): {', '.join(missing)}")
+
+    # simple type checks
+    if not isinstance(config.get("year"), int):
+        raise ValueError("'year' must be an integer")
+    if not isinstance(config.get("start_year"), int):
+        raise ValueError("'start_year' must be an integer")
+    if not isinstance(config.get("end_year"), int):
+        raise ValueError("'end_year' must be an integer")
+    if config.get("operation") not in ("average", "sum"):
+        raise ValueError("'operation' must be either 'average' or 'sum'")
 
 
 def bootstrap() -> None:
@@ -31,7 +58,7 @@ def bootstrap() -> None:
 
     try:
         config = load_config(config_path)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
+    except (FileNotFoundError, json.JSONDecodeError, KeyError, ValueError) as e:
         print(f"[ERROR] Failed to load config: {e}")
         sys.exit(1)
 
