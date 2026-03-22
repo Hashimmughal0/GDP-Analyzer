@@ -1,1 +1,0 @@
-# Make plugins a package
