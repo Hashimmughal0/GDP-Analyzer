@@ -35,23 +35,34 @@ class PipelineTelemetrySubject:
 
 class TelemetryWatcher(threading.Thread):
     def __init__(self, subject: PipelineTelemetrySubject, raw_counter: QueueCounter,
-                 processed_counter: QueueCounter, poll_interval: float = 0.8) -> None:
+                 processed_counter: QueueCounter, raw_queue: Any = None,
+                 processed_queue: Any = None, poll_interval: float = 0.8) -> None:
         super().__init__(name="TelemetryWatcher", daemon=True)
         self._subject = subject
         self._raw_counter = raw_counter
         self._processed_counter = processed_counter
+        self._raw_queue = raw_queue
+        self._processed_queue = processed_queue
         self._interval = max(poll_interval, 0.2)
         self._stop_event = threading.Event()
 
     def run(self) -> None:
         while not self._stop_event.is_set():
-            raw_size = self._raw_counter.snapshot()
-            processed_size = self._processed_counter.snapshot()
+            raw_size = self._observe_queue(self._raw_queue, self._raw_counter)
+            processed_size = self._observe_queue(self._processed_queue, self._processed_counter)
             self._subject.report_stream_sizes(raw_size, processed_size)
             time.sleep(self._interval)
 
     def stop(self) -> None:
         self._stop_event.set()
+
+    def _observe_queue(self, queue_obj: Any, counter: QueueCounter) -> int:
+        if queue_obj is None:
+            return counter.snapshot()
+        try:
+            return queue_obj.qsize()
+        except (OSError, NotImplementedError, AttributeError):
+            return counter.snapshot()
 
 
 class TelemetryQueueObserver:

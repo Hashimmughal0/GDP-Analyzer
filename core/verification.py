@@ -1,4 +1,4 @@
-import hashlib
+﻿import hashlib
 from multiprocessing import Process, Queue
 from typing import Any
 
